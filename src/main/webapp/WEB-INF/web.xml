@@ -11,6 +11,17 @@
         </jsp-property-group>
     </jsp-config>
 
+    <context-param>
+        <param-name>cloudinaryAPIkey</param-name>
+        <param-value>yourVariableValue</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>com.group1.offcampushousing.umtoffcampushousing.servlets.LogoutServlet</servlet-class>
+    </servlet>
+    
+
     <servlet>
         <servlet-name>login</servlet-name>
         <jsp-file>/jsp/login.jsp</jsp-file>
@@ -19,6 +30,27 @@
         <servlet-name>register</servlet-name>
         <jsp-file>/jsp/register.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>addProperty</servlet-name>
+        <jsp-file>/jsp/addProperty.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>housemateFinder</servlet-name>
+        <jsp-file>/jsp/housemateFinder.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>propertyDetails</servlet-name>
+        <jsp-file>/jsp/propertyDetails.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>maintenanceView</servlet-name>
+        <jsp-file>/jsp/maintenanceView.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>maintenanceForm</servlet-name>
+        <jsp-file>/jsp/maintenanceForm.jsp</jsp-file>
+    </servlet>
+
 
     <servlet-mapping>
         <servlet-name>login</servlet-name>
@@ -28,5 +60,38 @@
         <servlet-name>register</servlet-name>
         <url-pattern>/register.jsp</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>addProperty</servlet-name>
+        <url-pattern>/addProperty.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>housemateFinder</servlet-name>
+        <url-pattern>/housemateFinder.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>propertyDetails</servlet-name>
+        <url-pattern>/propertyDetails.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>maintenanceView</servlet-name>
+        <url-pattern>/maintenanceView.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>maintenanceForm</servlet-name>
+        <url-pattern>/maintenanceForm.jsp</url-pattern>
+    </servlet-mapping>
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>propertyServlet</servlet-name>-->
+<!--        <url-pattern>/propertyServlet</url-pattern>-->
+<!--    </servlet-mapping>-->
+
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
 </web-app>
 

@@ -1,0 +1,42 @@
+.card-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.property-card {
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.property-card img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.property-card h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.property-card p {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.property-card .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.property-card .btn:hover {
+    background-color: #0056b3;
+}

@@ -20,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/loginServlet")
+@WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String LOGIN_URL = "https://pelajar.mynemo.umt.edu.my/portal_login_ldap.php";
@@ -56,13 +57,12 @@ public class LoginServlet extends HttpServlet {
                 res.getWriter().write("Rate limit exceeded. Please try again later.");
             } else {
                 if (isLoginSuccessful(payload)) {
-//                    res.getWriter().write("Login successful!");
-                    req.setAttribute("uid", user.getUsername());
+                    req.setAttribute("username", user.getUsername());
                     UserDao.save(user);
                     req.getRequestDispatcher("").forward(req, res);
                 } else if (isCredentialsValid(user.getUsername(), user.getPassword())) {
-                    req.setAttribute("uid", user.getUsername());
-//                    res.getWriter().write("Login successful!");
+                    HttpSession session = req.getSession();
+                    session.setAttribute("username", user.getUsername());
                     req.getRequestDispatcher("index.jsp").forward(req, res);
                 } else {
                     res.sendRedirect("login.jsp");
@@ -87,9 +87,6 @@ public class LoginServlet extends HttpServlet {
         HttpResponse response = httpclient.execute(httppost);
         boolean isSuccessful = false;
 
-        System.out.println(response.getStatusLine());
-        System.out.println(response.getStatusLine().getStatusCode());
-
         if (response.getStatusLine().getStatusCode() == 302) {
             isSuccessful = true;
         }
@@ -99,7 +96,6 @@ public class LoginServlet extends HttpServlet {
 
     private boolean isCredentialsValid(String username, String password) throws Exception {
         Connection myConnection = DatabaseUtils.getConnection();
-
         PreparedStatement stmt = null;
         ResultSet rs = null;
         boolean isValid = false;
@@ -109,10 +105,8 @@ public class LoginServlet extends HttpServlet {
             stmt.setString(1, username);
             stmt.setString(2, password);
             rs = stmt.executeQuery();
-            if (rs.next()) {
-                int count = rs.getInt(1);
-                isValid = count > 0;
-            }
+
+            isValid = rs.next();
         } catch (SQLException e) {
             throw new Exception("Database error", e);
         } finally {

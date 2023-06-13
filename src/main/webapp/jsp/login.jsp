@@ -15,14 +15,14 @@
 <h1>If you are a student, or already registered</h1>
 <div class="container">
     <h2>Login</h2>
-    <form action="loginServlet" method="post">
+    <form action="LoginServlet" method="post">
         <div class="form-group">
             <label for="uid">Username</label>
-            <input type="text" id="uid" placeholder="Enter your username">
+            <input type="text" id="uid" name="uid" placeholder="Enter your username">
         </div>
         <div class="form-group">
             <label for="pwd">Password</label>
-            <input type="password" id="pwd" placeholder="Enter your password">
+            <input type="password" id="pwd" name="pwd" placeholder="Enter your password">
         </div>
         <button type="submit">Login</button>
     </form>

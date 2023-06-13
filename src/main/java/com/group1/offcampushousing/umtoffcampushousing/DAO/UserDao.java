@@ -12,8 +12,8 @@ public class UserDao {
         int status = 0;
 
         try {
-            Connection con = DatabaseUtils.getConnection();
-            PreparedStatement ps = con.prepareStatement(
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(
                     "insert into users(uid, email, password) values (?, ?, ?)"
             );
             ps.setString(1, e.getUsername());
@@ -21,7 +21,7 @@ public class UserDao {
             ps.setString(3, e.getPassword());
 
             status = ps.executeUpdate();
-            DatabaseUtils.closeConnection(con);
+            DatabaseUtils.closeConnection(conn);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -32,13 +32,13 @@ public class UserDao {
     public static int update(User e) {
         int status = 0;
         try {
-            Connection con = DatabaseUtils.getConnection();
-            PreparedStatement ps = con.prepareStatement("update users set email=?, password=? where username=?");
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement("update users set email=?, password=? where username=?");
             ps.setString(1, e.getEmail());
             ps.setString(2, e.getPassword());
 
             status = ps.executeUpdate();
-            DatabaseUtils.closeConnection(con);
+            DatabaseUtils.closeConnection(conn);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -50,11 +50,11 @@ public class UserDao {
     public static int delete(int id) {
         int status = 0;
         try {
-            Connection con = DatabaseUtils.getConnection();
-            PreparedStatement ps = con.prepareStatement("delete from users where id=?");
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement("delete from users where id=?");
             ps.setInt(1, id);
             status = ps.executeUpdate();
-            DatabaseUtils.closeConnection(con);
+            DatabaseUtils.closeConnection(conn);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,8 +67,8 @@ public class UserDao {
         User e = new User();
 
         try {
-            Connection con = DatabaseUtils.getConnection();
-            PreparedStatement ps = con.prepareStatement("select * from users where id=?");
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement("select * from users where id=?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -77,7 +77,7 @@ public class UserDao {
                 e.setPassword(rs.getString(3));
 //                e.setRole(rs.getString(4));
             }
-            DatabaseUtils.closeConnection(con);
+            DatabaseUtils.closeConnection(conn);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -88,8 +88,8 @@ public class UserDao {
         List<User> list = new ArrayList<User>();
 
         try {
-            Connection con = DatabaseUtils.getConnection();
-            PreparedStatement ps = con.prepareStatement("select * from users");
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement("select * from users");
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -100,7 +100,7 @@ public class UserDao {
 //                e.setRole(rs.getString(4));
                 list.add(e);
             }
-            DatabaseUtils.closeConnection(con);
+            DatabaseUtils.closeConnection(conn);
         } catch (Exception e) {
             e.printStackTrace();
         }
