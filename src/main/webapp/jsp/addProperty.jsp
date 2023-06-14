@@ -93,7 +93,7 @@
 <body>
 <div class="container">
     <h1>Property Details Form</h1>
-    <form action="propertyServlet" method="post">
+    <form action="propertyServlet" method="post" enctype="multipart/form-data">
         <label for="propertyName">Property Name :</label>
         <input type="text" id="propertyName" name="propertyName" required>
 
@@ -106,76 +106,21 @@
         <textarea name="propertyAddr" id="propertyAddr" cols="30" rows="10"></textarea>
 
         <label for="propertyRate">Property Rate (RM)/Month :</label>
-        <input type="text" name="propertyRate" id="propertyRate">
+        <input type="number" name="propertyRate" id="propertyRate">
 
+        <input type="file" name="image" required="required"/>
+<%--        <label for="images">Photos:</label>--%>
+<%--        <input type="file" id="images" name="images" accept="image/*" required multiple>--%>
+<%--        <div class="preview-container"></div>--%>
 
-        <%--        <cl:upload fieldName="image" name="image" />--%>
-
-        <%--        <input type="hidden" name="cdnUrl">--%>
-
-        <input type="submit" value="Submit">
+        <input type="submit" value="Add Property">
     </form>
 
-    <form id="upload-form">
-        <label for="photos">Photos:</label>
-        <input type="file" id="photos" name="photos" accept="image/*" required multiple>
-        <div class="preview-container"></div>
-    </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 <script>
-    // $('#photos').on('change', function (e) {
-    //     const file = e.target.files[0];
-    //     const reader = new FileReader();
-    //     const preview = $('.preview');
-    //
-    //     reader.onloadend = function () {
-    //         const image = $('<img>').attr('src', reader.result);
-    //         preview.empty().append(image);
-    //
-    //         const deleteButton = $('<button>').addClass('delete-button').text('X');
-    //         deleteButton.on('click', function () {
-    //             preview.empty();
-    //         });
-    //         preview.append(deleteButton);
-    //     };
-    //
-    //     if (file) {
-    //         reader.readAsDataURL(file);
-    //     } else {
-    //         preview.empty();
-    //     }
-    // });
-
-    // $('#photos').on('change', function (e) {
-    //     const files = Array.from(e.target.files);
-    //     const previewContainer = $('.preview');
-    //     previewContainer.empty(); // Clear the container before adding new previews
-    //
-    //     files.forEach(file => {
-    //         const reader = new FileReader();
-    //
-    //         reader.onloadend = function () {
-    //             const image = $('<img>').attr('src', reader.result);
-    //             const preview = $('<div>').addClass('preview');
-    //             preview.append(image);
-    //
-    //             const deleteButton = $('<button>').addClass('delete-button').text('X');
-    //             deleteButton.on('click', function () {
-    //                 preview.remove();
-    //             });
-    //             preview.append(deleteButton);
-    //
-    //             previewContainer.append(preview);
-    //         };
-    //
-    //         if (file) {
-    //             reader.readAsDataURL(file);
-    //         }
-    //     });
-    // });
 
     $('#photos').on('change', function (e) {
         const files = Array.from(e.target.files);
@@ -283,89 +228,6 @@
             }
         });
     });
-
-
-    // cloudinary
-    <%--const cloudinaryConfig = {--%>
-    <%--    cloudName: 'your_cloud_name',--%>
-    <%--    uploadPreset: 'your_upload_preset'--%>
-    <%--};--%>
-
-    <%--const uploadToCloudinary = (file) => {--%>
-    <%--    const formData = new FormData();--%>
-    <%--    formData.append('file', file);--%>
-    <%--    formData.append('upload_preset', cloudinaryConfig.uploadPreset);--%>
-
-    <%--    return fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, {--%>
-    <%--        method: 'POST',--%>
-    <%--        body: formData--%>
-    <%--    })--%>
-    <%--        .then(response => response.json())--%>
-    <%--        .then(data => data.secure_url)--%>
-    <%--        .catch(error => {--%>
-    <%--            console.error('Error uploading photo to Cloudinary:', error);--%>
-    <%--            throw error;--%>
-    <%--        });--%>
-    <%--};--%>
-
-    <%--$('form').submit(async function (event) {--%>
-    <%--    event.preventDefault();--%>
-
-    <%--    const title = $('#title').val();--%>
-    <%--    const description = $('#description').val();--%>
-    <%--    const photo = $('#photos')[0].files[0];--%>
-
-    <%--    try {--%>
-    <%--        const photoUrl = await uploadToCloudinary(photo);--%>
-    <%--        $('<input>').attr({--%>
-    <%--            type: 'hidden',--%>
-    <%--            name: 'photoUrl',--%>
-    <%--            value: photoUrl--%>
-    <%--        }).appendTo($(this));--%>
-
-    <%--        var cdnUrlInput = document.querySelector("input[name='cdnUrl']");--%>
-    <%--        cdnUrlInput.value = cdnUrl;--%>
-
-    <%--        this.submit();--%>
-    <%--    } catch (error) {--%>
-    <%--        alert('Failed to upload the photo. Please try again.');--%>
-    <%--    }--%>
-    <%--});--%>
-
-    const api_key = "417981148734942"
-    const cloud_name = "dk9x6bja3"
-    // It's okay for these to be public on client-side JS
-    // You just don't ever want to leak your API Secret
-
-    document.querySelector("#upload-form").addEventListener("submit", async function (e) {
-        e.preventDefault()
-
-        // get signature. In reality you could store this in localstorage or some other cache mechanism, it's good for 1 hour
-        const signatureResponse = await axios.get("/get-signature")
-
-        const data = new FormData()
-        data.append("file", document.querySelector("#file-field").files[0])
-        data.append("api_key", api_key)
-        data.append("signature", signatureResponse.data.signature)
-        data.append("timestamp", signatureResponse.data.timestamp)
-
-        const cloudinaryResponse = await axios.post(`https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`, data, {
-            headers: { "Content-Type": "multipart/form-data" },
-            onUploadProgress: function (e) {
-                console.log(e.loaded / e.total)
-            }
-        })
-        console.log(cloudinaryResponse.data)
-
-        // send the image info back to our server
-        const photoData = {
-            public_id: cloudinaryResponse.data.public_id,
-            version: cloudinaryResponse.data.version,
-            signature: cloudinaryResponse.data.signature
-        }
-
-        axios.post("/do-something-with-photo", photoData)
-    })
 
 </script>
 </body>

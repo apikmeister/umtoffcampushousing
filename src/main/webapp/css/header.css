@@ -1,12 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
 /*navbar*/
-
 header {
     position: fixed;
     top: 0;
@@ -51,44 +43,4 @@ nav > ul {
 
 .navbar > ul > li {
     font-size: 1.2rem;
-}
-
-/*hero*/
-.hero {
-    height: 100vh;
-    display: flex;
-    background-color: wheat;
-    justify-content: space-around;
-    align-items: center;
-    font-weight: bold;
-}
-
-footer {
-    padding: 20px 120px;
-    background-color: #151414;
-}
-
-.info-section {
-    display: flex;
-}
-
-.footer-section > h3 {
-    font-weight: bold;
-    margin-bottom: 40px;
-    position: relative;
-    color: #ffffff;
-}
-
-.footer-section > p {
-    line-height: 28px;
-}
-
-.footer-section > h3::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -15px;
-    height: 2px;
-    width: 50px;
-    background: #ff5e14;
 }

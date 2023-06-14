@@ -1,11 +1,12 @@
 package com.group1.offcampushousing.umtoffcampushousing.DAO;
 
-import com.group1.offcampushousing.umtoffcampushousing.models.Post;
-import com.group1.offcampushousing.umtoffcampushousing.utils.DatabaseUtils;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group1.offcampushousing.umtoffcampushousing.models.Post;
+import com.group1.offcampushousing.umtoffcampushousing.utils.DatabaseUtils;
+import com.group1.offcampushousing.umtoffcampushousing.utils.ImageUtils;
 
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,26 +14,33 @@ import java.util.List;
 public class PostDAO {
 
     public static int createPost(Post p) {
-        int status = 0;
 
         try {
             Connection conn = DatabaseUtils.getConnection();
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO post(content, username, likes, replies, image) VALUES (?, ?, ?, ?, ?)"
-            );
+                    "INSERT INTO post(content, username, likes, replies, image) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, p.getContent());
             ps.setString(2, p.getUsername());
             ps.setInt(3, p.getLikes());
             ps.setObject(4, p.getReplies());
-            ps.setBytes(5, p.getImage());
+            ps.setBlob(5, p.getIs());
 
-            status = ps.executeUpdate();
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int postId = rs.getInt(1);
+                    p.setId(postId);
+                    return postId;
+                }
+            }
+
             DatabaseUtils.closeConnection(conn);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        return status;
+        return -1;
     }
 
     public static int updatePost(Post p) {
@@ -75,7 +83,7 @@ public class PostDAO {
         try {
             Connection conn = DatabaseUtils.getConnection();
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM post");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM post ORDER BY id DESC");
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -85,15 +93,18 @@ public class PostDAO {
                 post.setContent(rs.getString("content"));
                 post.setUsername(rs.getString("username"));
                 post.setLikes(rs.getInt("likes"));
-//                post.setReplies(rs.getObject("replies", List.class));
-                post.setImage(rs.getBytes("image"));
+                InputStream imageInputStream = rs.getBinaryStream("image");
+                if (imageInputStream != null) {
+                    String imageData = ImageUtils.convertInputStreamToBase64(imageInputStream);
+                    post.setImage(imageData);
+                }
 
                 String repliesJson = rs.getString("replies");
                 if (repliesJson != null && !repliesJson.isEmpty()) {
-                    List<String> replies = objectMapper.readValue(repliesJson, new TypeReference<List<String>>() {});
+                    List<String> replies = objectMapper.readValue(repliesJson, new TypeReference<List<String>>() {
+                    });
                     post.setReplies(replies);
                 }
-
 
                 posts.add(post);
             }
@@ -119,6 +130,7 @@ public class PostDAO {
                     post.setContent(rs.getString("content"));
                     post.setUsername(rs.getString("username"));
                     post.setLikes(rs.getInt("likes"));
+                    post.setBlob(rs.getBlob("image"));
 
                     return post;
                 }
@@ -155,7 +167,6 @@ public class PostDAO {
             e.printStackTrace();
         }
     }
-
 
 
 }

@@ -1,20 +1,19 @@
 <%--
   Created by IntelliJ IDEA.
   User: apikmeister
-  Date: 6/13/2023
-  Time: 10:42 PM
+  Date: 6/14/2023
+  Time: 5:02 AM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Maintenance Form</title>
+    <title>Property Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/purpleShade.css">
 </head>
 <body class="bg-gray-100">
-<h1 class="text-3xl text-center my-6">Maintenance Form</h1>
+<h1 class="text-3xl text-center my-6">Property Form</h1>
 <form action="MaintenanceServlet" method="post" class="max-w-md mx-auto bg-white shadow-md rounded-lg px-8 py-6">
     <input type="hidden" name="action" value="${param.action}">
     <input type="hidden" name="id" value="${param.id}">

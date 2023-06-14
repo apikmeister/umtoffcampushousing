@@ -2,15 +2,12 @@ package com.group1.offcampushousing.umtoffcampushousing.controllers;
 
 import com.group1.offcampushousing.umtoffcampushousing.DAO.PostDAO;
 import com.group1.offcampushousing.umtoffcampushousing.models.Post;
-import org.cloudinary.json.JSONException;
-import org.cloudinary.json.JSONObject;
+import com.group1.offcampushousing.umtoffcampushousing.utils.ImageUtils;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @WebServlet("/post")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+        maxFileSize = 1024 * 1024 * 10, // 10MB
+        maxRequestSize = 1024 * 1024 * 50)
 public class PostController extends HttpServlet {
 
     private PostDAO postDAO;
@@ -37,6 +37,8 @@ public class PostController extends HttpServlet {
                 handleLike(req, res);
             } else if (action != null && action.equals("reply")) {
                 handleReply(req, res);
+            } else if (action != null && action.equals("delete")) {
+                deletePost(req, res, session);
             } else {
                 handlePost(req, res, session);
             }
@@ -78,60 +80,30 @@ public class PostController extends HttpServlet {
     }
 
     private void handlePost(HttpServletRequest req, HttpServletResponse res, HttpSession session) throws ServletException, IOException {
-
+        res.setContentType("text/html;charset=UTF-8");
         String content = req.getParameter("content");
         String username = (String) session.getAttribute("username");
 
-//        Part imagePart = req.getPart("image");
-//
-//        byte[] imageData = null;
-//        if (imagePart != null && imagePart.getSize() > 0) {
-//            InputStream inputStream = imagePart.getInputStream();
-//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//            byte[] buffer = new byte[4096];
-//            int bytesRead;
-//            while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                outputStream.write(buffer, 0, bytesRead);
-//            }
-//            imageData = outputStream.toByteArray();
-//        }
+        Part imagePart = req.getPart("image");
+        InputStream inputStream = null;
 
-//        Post post = new Post();
-//
-////        if (imageData != null) {
-////            post.setContent(content);
-////            post.setUsername(username);
-////            post.setImage(imageData);
-////        } else {
-//        post.setContent(content);
-//        post.setUsername(username);
-////        }
-//
-//        try {
-//            postDAO.createPost(post);
-//
-//            String jsonResponse = "{ \"success\": true, \"postContent\": \"" + post.getContent() + "\" }";
-//
-//            // Set the response content type and character encoding
-//            res.setContentType("application/json");
-//            res.setCharacterEncoding("UTF-8");
-//
-//            // Send the JSON response
-//            res.getWriter().write(jsonResponse);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        if (imagePart != null) {
+            long fileSize = imagePart.getSize();
+            String fileContent = imagePart.getContentType();
+            inputStream = imagePart.getInputStream();
+        }
 
         if (content != null) {
             // Process the content value
             Post post = new Post();
             post.setContent(content);
             post.setUsername(username);
+            post.setIs(inputStream);
 
             try {
-                postDAO.createPost(post);
+                int postId = postDAO.createPost(post);
 
-                String jsonResponse = "{ \"success\": true, \"postContent\": \"" + post.getContent() + "\" }";
+                String jsonResponse = "{ \"success\": true, \"postId\": \"" + postId + "\", \"postUser\": \"" + post.getUsername() + "\", \"postContent\": \"" + post.getContent() + "\", \"likes\": \"" + post.getLikes() + "\", \"replies\": \"" + post.getReplies() + "\", \"postImage\": \"" + ImageUtils.convertInputStreamToBase64(post.getIs()) + "\"  }";
 
                 // Set the response content type and character encoding
                 res.setContentType("application/json");
@@ -148,22 +120,24 @@ public class PostController extends HttpServlet {
                 res.setContentType("application/json");
                 res.setCharacterEncoding("UTF-8");
 
-                // Send the JSON response
                 res.getWriter().write(jsonResponse);
             }
         } else {
             String jsonResponse = "{ \"success\": false }";
 
-            // Set the response content type and character encoding
             res.setContentType("application/json");
             res.setCharacterEncoding("UTF-8");
 
-            // Send the JSON response
             res.getWriter().write(jsonResponse);
         }
+    }
 
-        // Redirect back to the home page
-//        res.sendRedirect(req.getContextPath() + "/home?username=" + username);
+    private void deletePost(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        int postId = Integer.parseInt(request.getParameter("postId"));
+
+        PostDAO.deletePost(postId);
+        response.sendRedirect("housemateFinder.jsp");
+
     }
 
     private String readContentFromInputStream(InputStream inputStream) throws IOException {
@@ -177,5 +151,18 @@ public class PostController extends HttpServlet {
         }
 
         return contentBuilder.toString();
+    }
+
+    private String extractFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        String[] elements = contentDisposition.split(";");
+
+        for (String element : elements) {
+            if (element.trim().startsWith("filename")) {
+                return element.substring(element.indexOf("=") + 1).trim().replace("\"", "");
+            }
+        }
+
+        return "";
     }
 }
