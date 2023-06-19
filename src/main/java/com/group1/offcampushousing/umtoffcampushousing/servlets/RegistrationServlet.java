@@ -14,19 +14,21 @@ import java.io.IOException;
 @WebServlet("/RegistrationServlet")
 public class RegistrationServlet extends HttpServlet {
 
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         User user = new User();
         user.setUsername(req.getParameter("uid"));
         user.setEmail(req.getParameter("email"));
+        user.setFirstName(req.getParameter("firstName"));
+        user.setLastName(req.getParameter("lastName"));
+        user.setRole(req.getParameter("role"));
         user.setPassword(req.getParameter("password"));
         HttpSession session = req.getSession();
         session.setAttribute("uid", user.getUsername());
+        session.setAttribute("role", req.getParameter("role"));
 
         UserDao.save(user);
         res.sendRedirect("login.jsp");
-//        req.getRequestDispatcher("login.jsp").forward(req, res);
     }
 }

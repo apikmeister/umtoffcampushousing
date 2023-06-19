@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,17 +38,20 @@ public class PropertyDAO {
         return status;
     }
 
-    public static int updateProperty(Property e) {
+    public static int updateProperty(Property p) {
         int status = 0;
         try {
             Connection conn = DatabaseUtils.getConnection();
-            PreparedStatement ps = conn.prepareStatement("update users set email=?, password=? where username=?");
-//            ps.setString(1, e.getEmail());
-//            ps.setString(2, e.getPassword());
+            PreparedStatement ps = conn.prepareStatement("UPDATE property set propertyName = ?, propertyType = ?, propertyAddr = ?, propertyRate = ?, propertyImage = ?  where propertyID = ?");
+            ps.setString(1, p.getPropertyName());
+            ps.setString(2, p.getPropertyType());
+            ps.setString(3, p.getPropertyAddr());
+            ps.setDouble(4, p.getPropertyRate());
+            ps.setBlob(5, p.getIs());
+            ps.setInt(6, p.getPropertyId());
 
             status = ps.executeUpdate();
             DatabaseUtils.closeConnection(conn);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -59,7 +63,7 @@ public class PropertyDAO {
         int status = 0;
         try {
             Connection conn = DatabaseUtils.getConnection();
-            PreparedStatement ps = conn.prepareStatement("delete from users where id=?");
+            PreparedStatement ps = conn.prepareStatement("delete from property where propertyID = ?");
             ps.setInt(1, id);
             status = ps.executeUpdate();
             DatabaseUtils.closeConnection(conn);
@@ -69,6 +73,55 @@ public class PropertyDAO {
         }
 
         return status;
+    }
+
+    public static List<Property> getPropertyByOwner(String owner) {
+        Property property = new Property();
+        List<Property> propertyList = new ArrayList<Property>();
+
+
+        try {
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM property where propertyOwner = ?");
+            ps.setString(1, owner);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                property.setPropertyId(rs.getInt(1));
+                property.setPropertyName(rs.getString(2));
+                property.setPropertyOwner(rs.getString(3));
+                property.setPropertyType(rs.getString(4));
+                property.setPropertyAddr(rs.getString(5));
+                property.setPropertyRate(rs.getDouble(6));
+                InputStream imageInputStream = rs.getBinaryStream(7);
+                if (imageInputStream != null) {
+                    String imageData = ImageUtils.convertInputStreamToBase64(imageInputStream);
+                    property.setImage(imageData);
+                }
+
+                propertyList.add(property);
+
+            }
+            DatabaseUtils.closeConnection(conn);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return propertyList;
+    }
+
+    public static void storeSubscriptionId(String propertyId, String rentBy) {
+        try {
+            Connection conn = DatabaseUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement("UPDATE property set rentBy = ?  where propertyID = ?");
+//            ps.setString(1, subscriptionId);
+            ps.setString(1, rentBy);
+            ps.setString(2, propertyId);
+
+            ps.executeUpdate();
+            DatabaseUtils.closeConnection(conn);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
     }
 
     public static Property getPropertyById(int id) {
@@ -82,9 +135,17 @@ public class PropertyDAO {
             if (rs.next()) {
                 property.setPropertyId(rs.getInt(1));
                 property.setPropertyName(rs.getString(2));
-                property.setPropertyType(rs.getString(3));
-                property.setPropertyAddr(rs.getString(4));
-//                property.setPropertyRate(rs.getString(5));
+                property.setPropertyOwner(rs.getString(3));
+                property.setPropertyType(rs.getString(4));
+                property.setPropertyAddr(rs.getString(5));
+                property.setPropertyRate(rs.getDouble(6));
+                DecimalFormat decimalFormat = new DecimalFormat("0.00");
+                InputStream imageInputStream = rs.getBinaryStream(7);
+                if (imageInputStream != null) {
+                    String imageData = ImageUtils.convertInputStreamToBase64(imageInputStream);
+                    property.setImage(imageData);
+                }
+                property.setRentBy(rs.getString(10));
             }
             DatabaseUtils.closeConnection(conn);
         } catch (Exception ex) {
@@ -125,4 +186,10 @@ public class PropertyDAO {
         return propertyList;
     }
 
+    public static boolean hasSubscription(String username, int propertyId) {
+
+        Property p = getPropertyById(propertyId);
+
+        return p.getRentBy() != null && p.getRentBy().equals(username);
+    }
 }

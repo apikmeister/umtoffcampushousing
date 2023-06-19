@@ -1,46 +1,46 @@
 /*navbar*/
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 20px 120px;
-    background-color: rgba(0, 0, 0, 0);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 100;
-    transition: 1s;
-}
+/*header {*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    padding: 20px 120px;*/
+/*    background-color: rgba(0, 0, 0, 0);*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    z-index: 100;*/
+/*    transition: 1s;*/
+/*}*/
 
 header.purple {
     background-color: #cdc7db;
 }
 
-header > ul {
-    list-style: none;
-    color: white;
-    display: flex;
-    gap: 10px;
-}
+/*header > ul {*/
+/*    list-style: none;*/
+/*    color: white;*/
+/*    display: flex;*/
+/*    gap: 10px;*/
+/*}*/
 
-nav {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+/*.navbar {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 10px;*/
+/*}*/
 
-nav > ul {
-    list-style: none;
-    color: white;
-    display: flex;
-    gap: 10px;
-}
+/*.navbar > ul {*/
+/*    list-style: none;*/
+/*    color: white;*/
+/*    display: flex;*/
+/*    gap: 10px;*/
+/*}*/
 
-.accManage > li > a {
-    color: white;
-}
+/*.accManage > li > a {*/
+/*    color: white;*/
+/*}*/
 
-.navbar > ul > li {
-    font-size: 1.2rem;
-}
+/*.navbar > ul > li {*/
+/*    font-size: 1.2rem;*/
+/*}*/

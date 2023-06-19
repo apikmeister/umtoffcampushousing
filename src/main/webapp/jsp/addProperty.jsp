@@ -1,149 +1,78 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: apikmeister
-  Date: 6/6/2023
-  Time: 11:39 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://cloudinary.com/jsp/taglib" prefix="cl" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Property Details Form</title>
-    <style>
-        body {
-            background-color: #f6f6f6;
-            color: #333;
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            text-align: center;
-            color: #663399;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #663399;
-        }
-
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="file"] {
-            margin-top: 5px;
-        }
-
-        .preview {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            border: 1px solid #ccc;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .preview img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .delete-button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #fff;
-            color: #ff0000;
-            border: none;
-            padding: 2px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        input[type="submit"] {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            background-color: #663399;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="container">
-    <h1>Property Details Form</h1>
-    <form action="propertyServlet" method="post" enctype="multipart/form-data">
-        <label for="propertyName">Property Name :</label>
-        <input type="text" id="propertyName" name="propertyName" required>
+<body class="bg-[#2f2f2f]">
+<jsp:include page="Navbar.jsp" />
+<div class="container mx-auto p-12">
+    <h1 class="text-3xl text-center text-purple-700">Property Details Form</h1>
+    <form action="propertyServlet" method="post" enctype="multipart/form-data" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mt-8">
+        <div class="mb-4">
+            <label for="propertyName" class="block font-semibold text-purple-700 mb-2">Property Name:</label>
+            <input type="text" id="propertyName" name="propertyName" required
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
 
-        <label for="propertyType">Property Type :</label>
-        <select name="propertyType" id="propertyType">
-            <option value="Terrace">Terrace</option>
-        </select>
+        <div class="mb-4">
+            <label for="propertyType" class="block font-semibold text-purple-700 mb-2">Property Type:</label>
+            <select name="propertyType" id="propertyType"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <option value="Terrace">Terrace</option>
+            </select>
+        </div>
 
-        <label for="propertyAddr">Property Address :</label>
-        <textarea name="propertyAddr" id="propertyAddr" cols="30" rows="10"></textarea>
+        <div class="mb-4">
+            <label for="propertyAddr" class="block font-semibold text-purple-700 mb-2">Property Address:</label>
+            <textarea name="propertyAddr" id="propertyAddr" cols="30" rows="5"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg"></textarea>
+        </div>
 
-        <label for="propertyRate">Property Rate (RM)/Month :</label>
-        <input type="number" name="propertyRate" id="propertyRate">
+        <div class="mb-4">
+            <label for="propertyRate" class="block font-semibold text-purple-700 mb-2">Property Rate (RM)/Month:</label>
+            <input type="number" name="propertyRate" id="propertyRate"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
 
-        <input type="file" name="image" required="required"/>
-<%--        <label for="images">Photos:</label>--%>
-<%--        <input type="file" id="images" name="images" accept="image/*" required multiple>--%>
-<%--        <div class="preview-container"></div>--%>
+        <div class="mb-4">
+            <label for="image" class="block font-semibold text-purple-700 mb-2">Image:</label>
+            <input type="file" name="image" id="image" required="required"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
 
-        <input type="submit" value="Add Property">
+        <div class="text-center">
+            <input type="submit" value="Add Property"
+                   class="px-6 py-2 rounded-md text-white bg-purple-700 hover:bg-purple-800 cursor-pointer">
+        </div>
     </form>
-
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 <script>
+    // File preview and delete functionality
+    $('#image').on('change', function (e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        const preview = $('.preview');
+        const deleteButton = $('.delete-button');
 
-    $('#photos').on('change', function (e) {
-        const files = Array.from(e.target.files);
+        reader.onloadend = function () {
+            const image = $('<img>').attr('src', reader.result);
+            preview.empty().append(image);
+            deleteButton.show();
+        };
 
-        files.forEach(file => {
-            const reader = new FileReader();
-
-            reader.onloadend = function () {
-                const image = $('<img>').attr('src', reader.result);
-                const preview = $('<div>').addClass('preview');
-                const deleteButton = $('<button>').addClass('delete-button').text('X');
-                deleteButton.on('click', function () {
-                    preview.remove(); // Remove the parent preview container when delete button is clicked
-                });
-
-                preview.append(image, deleteButton);
-                $('.preview-container').append(preview);
-            };
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        });
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.empty();
+            deleteButton.hide();
+        }
     });
 
     // Handle drag and drop events for file upload
@@ -160,76 +89,41 @@
     // Highlight the drop area when dragging over it
     ['dragenter', 'dragover'].forEach(eventName => {
         dropArea.on(eventName, function () {
-            dropArea.addClass('highlight');
+            dropArea.addClass('bg-purple-200');
         });
     });
 
     // Remove the highlight from the drop area when dragging leaves it
     ['dragleave', 'drop'].forEach(eventName => {
         dropArea.on(eventName, function () {
-            dropArea.removeClass('highlight');
+            dropArea.removeClass('bg-purple-200');
         });
     });
 
     // Handle the dropped file
-    // dropArea.on('drop', function (e) {
-    //     e.preventDefault();
-    //     e.stopPropagation();
-    //
-    //     const file = e.originalEvent.dataTransfer.files[0];
-    //     const reader = new FileReader();
-    //     const preview = $('.preview');
-    //     const photoInput = $('#photos');
-    //
-    //     reader.onloadend = function () {
-    //         const image = $('<img>').attr('src', reader.result);
-    //         preview.empty().append(image);
-    //
-    //         const deleteButton = $('<button>').addClass('delete-button').text('X');
-    //         deleteButton.on('click', function () {
-    //             preview.empty();
-    //         });
-    //         preview.append(deleteButton);
-    //     };
-    //
-    //     if (file) {
-    //         reader.readAsDataURL(file);
-    //         photoInput.prop('files', e.originalEvent.dataTransfer.files);
-    //         photoInput.val(file.name);
-    //     } else {
-    //         preview.empty();
-    //         photoInput.val('');
-    //     }
-    // });
-
     dropArea.on('drop', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        const files = Array.from(e.originalEvent.dataTransfer.files);
+        const file = e.originalEvent.dataTransfer.files[0];
+        const reader = new FileReader();
+        const preview = $('.preview');
+        const deleteButton = $('.delete-button');
 
-        files.forEach(file => {
-            const reader = new FileReader();
+        reader.onloadend = function () {
+            const image = $('<img>').attr('src', reader.result);
+            preview.empty().append(image);
+            deleteButton.show();
+        };
 
-            reader.onloadend = function () {
-                const image = $('<img>').attr('src', reader.result);
-                const preview = $('<div>').addClass('preview');
-                const deleteButton = $('<button>').addClass('delete-button').text('X');
-                deleteButton.on('click', function () {
-                    preview.remove(); // Remove the parent preview container when delete button is clicked
-                });
-
-                preview.append(image, deleteButton);
-                $('.preview-container').append(preview);
-            };
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        });
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.empty();
+            deleteButton.hide();
+        }
     });
-
 </script>
+<jsp:include page="Footer.jsp" />
 </body>
 </html>
-

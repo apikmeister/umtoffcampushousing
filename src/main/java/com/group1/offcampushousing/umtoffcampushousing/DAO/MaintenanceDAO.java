@@ -3,10 +3,6 @@ package com.group1.offcampushousing.umtoffcampushousing.DAO;
 import com.group1.offcampushousing.umtoffcampushousing.models.MaintenanceRecord;
 import com.group1.offcampushousing.umtoffcampushousing.utils.DatabaseUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import sun.applet.Main;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

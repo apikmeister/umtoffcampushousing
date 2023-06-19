@@ -20,6 +20,7 @@ public class Property {
     private Blob blob;
     private byte[] imageData;
     private String image;
+    private String rentBy;
 
     public int getPropertyId() {
         return propertyId;
@@ -115,5 +116,13 @@ public class Property {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getRentBy() {
+        return rentBy;
+    }
+
+    public void setRentBy(String rentBy) {
+        this.rentBy = rentBy;
     }
 }

@@ -17,13 +17,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js"
             integrity="sha512-8Z5++K1rB3U+USaLKG6oO8uWWBhdYsM3hmdirnOEWp8h2B1aOikj5zBzlXs8QOrvY9OxEnD2QDkbSKKpfqcIWw=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="${pageContext.request.contextPath}/js/likePost.js"></script>
+    <script src="${pageContext.request.contextPath}/js/deleteConfirmationModal.js"></script>
     <script>
         $(document).ready(function () {
             $('#postForm').submit(function (e) {
                 e.preventDefault(); // Prevent the default form submission
-
-                // Create a FormData object to collect the form data
-                // var formData = new FormData(this);
 
                 var formData = new FormData(this);
 
@@ -38,32 +37,30 @@
                     success: function (response) {
                         // Handle the response from the server
                         if (response.success) {
-                            var newPostContainer = '<div id="postContainer_' + response.postId + '" class="bg-white shadow-md rounded-lg p-4 mt-4">' +
-                                '<p class="text-purple-700 font-semibold">' + response.postUser + ':</p>' +
-                                '<p>' + response.postContent + '</p>' +
-                                '<p class="text-purple-700">Likes: <span id="likeCount_' + response.postId + '">' + response.likes + '</span></p>';
+                            var newPostContainer = `
+                                <div id="postContainer_${response.postId}" class="bg-white shadow-md rounded-lg p-4 mt-4">
+                                    <p class="text-purple-700 font-semibold">${response.postUser}:</p>
+                                    <p>${response.postContent}</p>
+                                    <p class="text-purple-700">Likes: <span id="likeCount_${response.postId}">${response.likes}</span></p>
+                            `;
 
                             // Check if an image is present
                             if (response.postImage) {
-                                newPostContainer += '<img src="data:image/jpeg;base64,' + response.postImage + '" alt="Tweet Image" width="200" class="my-4">';
+                                newPostContainer += `
+                                    <img src="data:image/jpeg;base64,${response.postImage}" alt="Tweet Image" width="200" class="my-4">
+                                `;
                             }
 
-                            newPostContainer += '<button onclick="likePost(' + response.postId + ')" class="px-4 py-2 rounded-md purple-bg text-white">Like</button>' +
-                                '<form action="post" method="post" class="mt-2">' +
-                                '<input type="hidden" name="tweetId" value="' + response.postId + '">' +
-                                '<input type="hidden" name="action" value="like">' +
-                                '<input type="hidden" name="username" value="' + response.postImage + '">' +
-                                '<input type="submit" value="Like" class="px-4 py-2 rounded-md purple-bg text-white">' +
-                                '</form>' +
-                                '<form action="post" method="post" class="mt-2">' +
-                                '<input type="hidden" name="tweetId" value="' + response.postId + '">' +
-                                '<input type="hidden" name="action" value="reply">' +
-                                '<input type="hidden" name="username" value="' + response.postUser + '">' +
-                                '<textarea name="replyContent" rows="2" cols="30" required class="border-purple-700 rounded-lg px-4 py-2"></textarea>' +
-                                '<input type="submit" value="Reply" class="px-4 py-2 rounded-md purple-bg text-white mt-2">' +
-                                '</form>';
-
-                            newPostContainer += '</div>';
+                            newPostContainer += `
+                                <button onclick="likePost(${response.postId})" class="px-4 py-2 rounded-md purple-bg text-white">Like</button>
+                                <form action="post" method="post" class="mt-2">
+                                    <input type="hidden" name="tweetId" value="${response.postId}">
+                                    <input type="hidden" name="action" value="like">
+                                    <input type="hidden" name="username" value="${response.postImage}">
+                                    <input type="submit" value="Like" class="px-4 py-2 rounded-md purple-bg text-white">
+                                </form>
+                            </div>
+                            `;
 
                             // Prepend the new post container to the postContainer element
                             $('#postList').prepend(newPostContainer);
@@ -82,85 +79,98 @@
                 });
             });
         });
+
+        function toggleDropdown(postId) {
+            const dropdown = document.getElementById(`dropdown_${postId}`);
+            dropdown.classList.toggle("hidden");
+        }
+
     </script>
 </head>
 <body class="bg-gray-100">
-<jsp:include page="Navbar.jsp" />
-<h1 class="text-3xl text-center my-6">Find ${sessionScope.username}</h1>
-<form action="post" method="post" id="postForm" enctype="multipart/form-data" class="flex flex-col items-center">
-    <input type="hidden" name="username" value="${sessionScope.username}">
-    <textarea name="content" rows="4" cols="50" required class="border-purple-700 rounded-lg px-4 py-2 mt-4"></textarea>
-    <input type="file" name="image" required="required"/>
-    <input type="submit" value="Post" class="mt-4 px-6 py-2 rounded-md purple-bg text-white">
-</form>
+<jsp:include page="Navbar.jsp"/>
+<div class="w-full h-min flex flex-col justify-start items-center p-0 content-center flex-nowrap bg-[#9b72cf] absolute gap-0 pt-12">
+    <h1 class="text-3xl text-center my-6">Find your roommates here!</h1>
+    <c:if test="${sessionScope.username != null}">
+        <form action="post" method="post" id="postForm" enctype="multipart/form-data"
+              class="flex flex-col items-center">
+            <input type="hidden" name="username" value="${sessionScope.username}">
+            <textarea name="content" rows="4" cols="50" required
+                      class="border-purple-700 rounded-lg px-4 py-2 mt-4"></textarea>
+            <input type="file" name="image" required="required" class="mt-4">
+            <input type="submit" value="Post" class="mt-4 px-6 py-2 rounded-md purple-bg text-white">
+        </form>
+    </c:if>
+    <c:set var="posts" value="${PostDAO.getAllPosts()}" scope="request"/>
 
-<c:set var="posts" value="${PostDAO.getAllPosts()}" scope="request"/>
+    <div id="postList" class="w-full max-w-lg py-10">
+        <c:forEach items="${posts}" var="post">
+            <div id="postContainer_${post.id}" class="bg-white shadow-md rounded-lg p-4 m-4">
+                <div class="flex flex-col">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <p class="text-purple-700 font-semibold mr-2">${post.username}</p>
+                            <p class="text-gray-500">@${post.username}</p>
+                        </div>
+                        <div class="relative">
+                            <button onclick="toggleDropdown(${post.id})"
+                                    class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                     class="h-5 w-5">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4z"></path>
+                                </svg>
+                            </button>
+                            <div id="dropdown_${post.id}"
+                                 class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-2">
+                                <button onclick="likePost(${post.id})"
+                                        class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-gray-900 w-full text-left">
+                                    Like
+                                </button>
+                                <button onclick="displayConfirmationModal(${post.id})"
+                                        class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-gray-900 w-full text-left">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <p>${post.content}</p>
 
-<div id="postList">
-    <c:forEach items="${posts}" var="post">
-        <div id="postContainer" class="bg-white shadow-md rounded-lg p-4 mt-4">
-            <p class="text-purple-700 font-semibold">${post.username}:</p>
-            <p>${post.content}</p>
-            <p class="text-purple-700">Likes: <span id="likeCount_${post.id}">${post.likes}</span></p>
+                    <div class="mt-4">
+                        <c:if test="${not empty post.image}">
+                            <img src="data:image/jpeg;base64,${post.image}" alt="Tweet Image" class="my-2 rounded-lg">
+                        </c:if>
+                    </div>
 
-            <c:if test="${not empty post.image}">
-                <img src="data:image/jpeg;base64,${post.image}"
-                     alt="Tweet Image" width="200" class="my-4">
-            </c:if>
 
-            <button onclick="likePost(${post.id})" class="px-4 py-2 rounded-md purple-bg text-white"
-                    id="likeButton_${post.id}">Like
-            </button>
+                    <div class="flex items-center mt-4">
+                        <c:if test="${sessionScope.username != null}">
+                            <button onclick="likePost(${post.id})"
+                                    class="px-4 py-2 rounded-md purple-bg text-white mr-2"
+                                    id="likeButton_${post.id}">Like
+                            </button>
+                        </c:if>
 
-            <c:if test="${sessionScope.username == post.username}">
-                <button onclick="displayConfirmationModal(${post.id})" class="x-4 py-2 rounded-md purple-bg text-white">
-                    Delete
-                </button>
-                <%--                <form action="post" method="post" class="mt-2">--%>
-                <%--                    <input type="hidden" name="postId" value="${post.id}">--%>
-                <%--                    <input type="hidden" name="action" value="delete">--%>
-                <%--                    <input type="hidden" name="username" value="${username}">--%>
-                <%--                    <input type="submit" value="Delete" class="px-4 py-2 rounded-md purple-bg text-white">--%>
-                <%--                </form>--%>
-            </c:if>
+                        <p class="text-purple-700">Likes: <span id="likeCount_${post.id}">${post.likes}</span></p>
+                    </div>
+                </div>
 
-<%--            <form action="post" method="post" class="mt-2">--%>
-<%--                <input type="hidden" name="postId" value="${post.id}">--%>
-<%--                <input type="hidden" name="action" value="like">--%>
-<%--                <input type="hidden" name="username" value="${username}">--%>
-<%--                <input type="submit" value="Like" class="px-4 py-2 rounded-md purple-bg text-white">--%>
-<%--            </form>--%>
-
-            <form action="post" method="post" class="mt-2">
-                <input type="hidden" name="tweetId" value="${post.id}">
-                <input type="hidden" name="action" value="reply">
-                <input type="hidden" name="username" value="${username}">
-                <textarea name="replyContent" rows="2" cols="30" required
-                          class="border-purple-700 rounded-lg px-4 py-2"></textarea>
-                <input type="submit" value="Reply" class="px-4 py-2 rounded-md purple-bg text-white mt-2">
-            </form>
-
-            <c:forEach items="${post.replies}" var="reply">
-                <p>${reply}</p>
-            </c:forEach>
-
-            <div id="confirmationModal" class="modal">
-                <div class="modal-content">
-                    <h3>Confirmation</h3>
-                    <p>Are you sure you want to delete this post?</p>
-                    <form id="deleteForm" method="POST">
-                        <input type="hidden" id="actionInput" name="action">
-                        <input type="hidden" name="postId" value="${post.id}">
-                        <button type="submit">Delete</button>
-                        <button type="button" onclick="closeModal()">Cancel</button>
-                    </form>
+                <div id="confirmationModal" class="modal">
+                    <div class="modal-content">
+                        <h3>Confirmation</h3>
+                        <p>Are you sure you want to delete this post?</p>
+                        <form id="deleteForm" method="POST">
+                            <input type="hidden" id="actionInput" name="action">
+                            <input type="hidden" name="postId" value="${post.id}">
+                            <button type="submit">Delete</button>
+                            <button type="button" onclick="closeModal()">Cancel</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </c:forEach>
+        </c:forEach>
+    </div>
+
+    <jsp:include page="Footer.jsp"/>
 </div>
-<jsp:include page="Footer.jsp" />
 </body>
-<script src="${pageContext.request.contextPath}/js/likePost.js"></script>
-<script src="${pageContext.request.contextPath}/js/deleteConfirmationModal.js"></script>
 </html>

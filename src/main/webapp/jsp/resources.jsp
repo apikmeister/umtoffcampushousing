@@ -11,12 +11,9 @@
     <title>Title</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white">
-<header class="bg-purple-500 py-4">
-    <h2 class="text-center text-white text-3xl">Resources</h2>
-</header>
-
-<section class="flex flex-wrap">
+<body class="bg-[#2f2f2f]">
+<jsp:include page="Navbar.jsp" />
+<section class="flex flex-wrap mt-12 h-full">
     <nav class="w-full md:w-1/4 bg-black p-6">
         <ul class="list-none p-0">
             <li><a class="block py-2 px-4 text-white" href="resources.jsp">Home</a></li>

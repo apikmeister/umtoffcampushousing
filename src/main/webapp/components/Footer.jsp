@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/purpleShade.css">
 </head>
 <body>
-<footer class="bg-purple-900 py-8 px-6 text-white">
+<footer class="bg-purple-900 py-8 px-6 text-white w-full">
     <div class="container mx-auto">
         <div class="flex flex-wrap justify-between">
             <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 mb-8">

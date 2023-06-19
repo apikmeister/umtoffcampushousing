@@ -1,10 +1,7 @@
 package com.group1.offcampushousing.umtoffcampushousing.servlets;
 
-import com.group1.offcampushousing.umtoffcampushousing.DAO.PostDAO;
 import com.group1.offcampushousing.umtoffcampushousing.DAO.PropertyDAO;
-import com.group1.offcampushousing.umtoffcampushousing.models.Post;
 import com.group1.offcampushousing.umtoffcampushousing.models.Property;
-import com.group1.offcampushousing.umtoffcampushousing.utils.CloudinaryUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -13,9 +10,6 @@ import javax.servlet.http.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 @WebServlet("/propertyServlet")
@@ -56,27 +50,6 @@ public class PropertyServlet extends HttpServlet {
         property.setPropertyAddr(req.getParameter("propertyAddr"));
         property.setPropertyRate(Double.parseDouble(req.getParameter("propertyRate")));
 
-//        List<Part> imageParts = new ArrayList<>();
-
-//        Collection<Part> parts = req.getParts();
-//        for (Part part : parts) {
-//            if (part.getName().equals("images[]")) {
-//                imageParts.add(part);
-//            }
-//        }
-//
-//        for (Part imagePart : imageParts) {
-//            InputStream inputStream = null;
-//            if (imagePart != null) {
-//                long fileSize = imagePart.getSize();
-//                String fileContent = imagePart.getContentType();
-//                inputStream = imagePart.getInputStream();
-//
-//                byte[] imageData = toByteArray(inputStream);
-//                System.out.println(Arrays.toString(imageData));
-//                property.setImageData(imageData);
-//            }
-//        }
 
         Part imagePart = req.getPart("image");
         InputStream inputStream = null;

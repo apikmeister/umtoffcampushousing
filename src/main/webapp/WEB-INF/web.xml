@@ -12,8 +12,17 @@
     </jsp-config>
 
     <context-param>
-        <param-name>cloudinaryAPIkey</param-name>
-        <param-value>yourVariableValue</param-value>
+        <param-name>publishableKey</param-name>
+        <param-value>
+            pk_test_51NKE6THro8PvEloWABRF7he00nH3oQsuM16GmbbuBFjAXKSAPRQpGmoaFQVy06vWFJkZYdS9R6XIMlzNyLS38uqz00L2Kw58Ob
+        </param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>secretKey</param-name>
+        <param-value>
+            sk_test_51NKE6THro8PvEloWHUk5HyAoh5BU0d6Xa1BE55lXFJ5Zh5v0ZNxYyIiXrAs1EpxxINDsslkQoWVIx04MUxTWxM8P00nshxCVI8
+        </param-value>
     </context-param>
 
     <servlet>
@@ -61,6 +70,26 @@
         <servlet-name>houseListing</servlet-name>
         <jsp-file>/jsp/listing.jsp</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>editUserProfile</servlet-name>
+        <jsp-file>/jsp/editUserProfile.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>propertyListing</servlet-name>
+        <jsp-file>/jsp/propertyListing.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>editProperty</servlet-name>
+        <jsp-file>/jsp/editProperty.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>propertyOwner</servlet-name>
+        <jsp-file>/jsp/propertyOwner.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>payment</servlet-name>
+        <jsp-file>/jsp/stripePayment.jsp</jsp-file>
+    </servlet>
 
 
     <servlet-mapping>
@@ -106,6 +135,26 @@
     <servlet-mapping>
         <servlet-name>houseListing</servlet-name>
         <url-pattern>/houseListing.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>editUserProfile</servlet-name>
+        <url-pattern>/editUserProfile.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>propertyListing</servlet-name>
+        <url-pattern>/propertyListing.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>editProperty</servlet-name>
+        <url-pattern>/editProperty.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>payment</servlet-name>
+        <url-pattern>/payment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>propertyOwner</servlet-name>
+        <url-pattern>/propertyOwner.jsp</url-pattern>
     </servlet-mapping>
 
 
@@ -184,6 +233,7 @@
     </servlet-mapping>
 
 
+
     <!--Components-->
     <servlet>
         <servlet-name>Navbar</servlet-name>
@@ -201,6 +251,27 @@
         <servlet-name>Footer</servlet-name>
         <url-pattern>/Footer.jsp</url-pattern>
     </servlet-mapping>
+
+
+    <!--    <servlet>-->
+    <!--        <servlet-name>StripeServlet</servlet-name>-->
+    <!--        <servlet-class>com.group1.offcampushousing.umtoffcampushousing.servlets.StripeServlet</servlet-class>-->
+    <!--    </servlet>-->
+    <!--    <servlet-mapping>-->
+    <!--        <servlet-name>StripeServlet</servlet-name>-->
+    <!--        <url-pattern>/config</url-pattern>-->
+    <!--        <url-pattern>/create-payment-intent</url-pattern>-->
+    <!--        <url-pattern>/create-checkout-session</url-pattern>-->
+    <!--    </servlet-mapping>-->
+    <servlet>
+        <servlet-name>StripeUtils</servlet-name>
+        <servlet-class>com.group1.offcampushousing.umtoffcampushousing.utils.StripeUtils</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StripeUtils</servlet-name>
+        <url-pattern>/config</url-pattern>
+    </servlet-mapping>
+
 
     <welcome-file-list>
         <welcome-file>jsp/index.jsp</welcome-file>
